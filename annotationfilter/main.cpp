@@ -1,5 +1,5 @@
-
 #include<string>
+#include<algorithm>
 #include<iostream>
 #include<fstream>
 #include<functional>
@@ -7,26 +7,33 @@
 #include<stack>
 using namespace std;
 
-enum Otype {String,Note,SecNote};
+enum Otype {Char,String,Note,SecNote};
 
-inline size_t min(size_t a, size_t b) {
-	return a < b ? a : b;
-}
-
-inline pair<Otype, size_t> min3(size_t a,size_t b,size_t c){
-	return (a < b&&a < c) ? make_pair(String,a) : (b < c ? make_pair(Note,b) : make_pair(SecNote, c));
+inline pair<Otype, size_t> min4(size_t a,size_t b,size_t c, size_t d){
+	return (a<b&&a<c&&a<d)?make_pair(Char,a):((b<c&&b<d)? make_pair(String, b):(c<d)? make_pair(Note, c) : make_pair(SecNote, d));
 }
 
 pair<Otype, size_t> findTag(const string& source, size_t offset) {
-	size_t offsetStr = source.find('\"', offset);	//for string
+	size_t offsetchar = source.find('\'', offset);	//for char
+	size_t offsetStr = source.find('\"', offset);	//for string}
 	size_t offsetNote = source.find("//", offset);	//for note like //
 	size_t offsetSecNote = source.find("/*", offset);	//for section note like /**/
-	return min3(offsetStr, offsetNote, offsetSecNote);
+	return min4(offsetchar, offsetStr, offsetNote, offsetSecNote);
 }
 
 stack<pair<size_t, size_t>> notes;
 
 map<Otype, function<size_t(const string&, size_t)>> handler = {
+	{ Char,
+	[](const string& source, size_t offset) {
+	size_t end;
+	do {
+		end = min(source.find('\'',offset), source.find('\n', offset));
+	} while (end != string::npos && source[end - 1] == '\\');
+	return end;
+}
+	}
+	,
 	{String,
 	[](const string& source, size_t offset) {
 		size_t end;
@@ -55,7 +62,7 @@ map<Otype, function<size_t(const string&, size_t)>> handler = {
 };
 
 string readfile(const string& filename) {
-	ifstream ifs(filename);
+	ifstream ifs(filename, ios::in);
 	if(ifs){
 		string source;
 		ifs.seekg(0, ios::end);
@@ -63,7 +70,7 @@ string readfile(const string& filename) {
 		ifs.seekg(0, ios::beg);
 		ifs.read(&source[0], source.size());
 		ifs.close();
-		source.shrink_to_fit();
+		source.erase(source.find('\0'),string::npos);
 		return move(source);
 	}
 	throw(errno);
@@ -88,5 +95,6 @@ int main(int argc,char* argv[]) {
 	ofstream ofs("result.txt");
 	ofs << source;
 	cout << source;
+
 	return 0;	
 }
