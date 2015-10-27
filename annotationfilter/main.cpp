@@ -108,7 +108,10 @@ const function<size_t(const string&, stack<pair<size_t, size_t>>&, size_t)> Anno
 };
 
 int main(int argc,char* argv[]) {
-	if (argc == 1) return 0;
+	if (argc == 1) { 
+		cerr << "you may not pass a parameter as filename\n";
+		return 0; 
+	}
 	AnnotationFilter Fil(static_cast<string>(argv[1]));
 	Fil.Filter();
 	Fil.saveasfile("result.cpp");
