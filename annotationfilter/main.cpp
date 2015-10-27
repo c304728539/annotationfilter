@@ -61,7 +61,7 @@ private:
 			ifs.read(&source[0], source.size());
 			ifs.close();
 			source.erase(source.find('\0'), string::npos);
-			return move(source);
+			return source;
 		}
 		throw(ifs.rdstate());
 	}
