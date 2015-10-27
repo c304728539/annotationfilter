@@ -13,9 +13,11 @@ int c() {
 	//test 5
 	*/
 	auto c = '/*'; //should not exist
+
+	/*
+	*/
 	///*test 6
 	
-	//*/ //test 7
 
 	return 0;
 }
