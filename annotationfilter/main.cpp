@@ -112,7 +112,7 @@ int main(int argc,char* argv[]) {
 		cerr << "please pass a parameter as filename\n";
 		return 0; 
 	}
-	AnnotationFilter Fil(static_cast<string>(argv[1]));
+	AnnotationFilter Fil(argv[1]);
 	Fil.Filter();
 	cout << Fil.Source();
 	Fil.saveasfile("result.cpp");
